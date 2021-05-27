@@ -1,16 +1,8 @@
-# my_teams_apk
+# Smeat (My Teams Mobile Client)
 
 My Teams Global Client
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The aim of the application is to be able to use the MyTeams Servers developed by the Team "A la votre" using a mobile application instead of a CLI
+The application had to be developed in more or less 2 weeks.
