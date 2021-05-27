@@ -24,7 +24,7 @@ class ThreadWidgetState extends State<ThreadWidget> {
             ),
           ),
           Text(
-              "Loading comments...",
+              'Loading comments...',
               style: TextStyle(
                 fontSize: 20,
               )
@@ -36,7 +36,7 @@ class ThreadWidgetState extends State<ThreadWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Thread t = Provider.of<ConnectionInformation>(context, listen: true).thread!;
+    var t = Provider.of<ConnectionInformation>(context, listen: true).thread!;
     return Padding(
       padding: EdgeInsets.all(20),
       child: Column(
@@ -54,16 +54,16 @@ class ThreadWidgetState extends State<ThreadWidget> {
               Text(t.time),
             ],
           ),
-          Text(""),
+          Text(''),
           Text(
             t.content,
             style: TextStyle(
               fontSize: 20,
             ),
           ),
-          Text(""),
+          Text(''),
           Divider(),
-          Text("Comments : "),
+          Text('Comments : '),
           FutureBuilder<List<Message>>(
             initialData: Provider.of<ConnectionInformation>(context, listen: false).cachedMessages,
             future: _loadMessages(context),
@@ -72,7 +72,7 @@ class ThreadWidgetState extends State<ThreadWidget> {
               if (snapshot.hasError) {
                 print(snapshot.error);
                 return Center(
-                  child: Text("Error found !",
+                  child: Text('Error found !',
                     style: TextStyle(fontSize: 40),
                   ),
                 );
@@ -107,7 +107,7 @@ class ThreadWidgetState extends State<ThreadWidget> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text("Comment "),
+                Text('Comment '),
                 Icon(Icons.comment),
               ],
             ),
@@ -118,8 +118,8 @@ class ThreadWidgetState extends State<ThreadWidget> {
   }
 
   Future<List<Message>> _loadMessages(BuildContext context) {
-    print("LOADING MESSAGES");
-    ConnectionInformation cp =  Provider.of<ConnectionInformation>(context,  listen: false);
+    print('LOADING MESSAGES');
+    var cp =  Provider.of<ConnectionInformation>(context,  listen: false);
     return cp.loadMessages(null);
   }
 

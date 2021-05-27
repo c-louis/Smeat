@@ -38,15 +38,15 @@ class ConnectedRoutes extends VRouteElementBuilder {
             widget: TeamsWidget(),
             stackedRoutes: [
               VWidget(
-                path: ":team/" + channels,
+                path: ':team/' + channels,
                 widget: ChannelsWidget(),
                 stackedRoutes: [
                   VWidget(
-                    path: ":channel/" + threads,
+                    path: ':channel/' + threads,
                     widget: ThreadsWidget(),
                     stackedRoutes: [
                       VWidget(
-                        path: ":thread",
+                        path: ':thread',
                         widget: ThreadWidget(),
                       ),
                     ]

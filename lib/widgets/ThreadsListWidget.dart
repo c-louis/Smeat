@@ -19,7 +19,7 @@ class ThreadsListWidget extends StatelessWidget {
             ),
           ),
           Text(
-              "Loading threads...",
+              'Loading threads...',
               style: TextStyle(
                 fontSize: 20,
               )
@@ -39,7 +39,7 @@ class ThreadsListWidget extends StatelessWidget {
         if (snapshot.hasError) {
           print(snapshot.error);
           return Center(
-            child: Text("Error found !\n" + snapshot.error.toString(),
+            child: Text('Error found !\n' + snapshot.error.toString(),
               style: TextStyle(fontSize: 40),
             ),
           );
@@ -47,7 +47,7 @@ class ThreadsListWidget extends StatelessWidget {
         return ListView.separated(
           itemCount: (snapshot.data as List<Thread>).length,
           itemBuilder: (context, index) {
-            Thread t = (snapshot.data as List<Thread>)[index];
+            var t = (snapshot.data as List<Thread>)[index];
             return ListTile(
               title: Text(t.title),
               subtitle: Text(t.content, softWrap: false, overflow: TextOverflow.ellipsis),
@@ -69,7 +69,7 @@ class ThreadsListWidget extends StatelessWidget {
   }
 
   Future<List<Thread>> _loadThreads(BuildContext context) async {
-    ConnectionInformation cp =  Provider.of<ConnectionInformation>(context,  listen: false);
+    var cp =  Provider.of<ConnectionInformation>(context,  listen: false);
     return await cp.loadThreads(null);
   }
 }

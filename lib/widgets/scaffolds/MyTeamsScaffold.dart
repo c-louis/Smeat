@@ -9,7 +9,7 @@ class MyTeamsScaffold extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    String username = context.vRouter.pathParameters['username']!;
+    var username = context.vRouter.pathParameters['username']!;
 
     return Scaffold(
       appBar: AppBar(

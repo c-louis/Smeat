@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:vrouter/vrouter.dart';
 
-main() {
+void main() {
   group('VNester', () {
     testWidgets('VNester VStacked pop', (WidgetTester tester) async {
       await tester.pumpWidget(

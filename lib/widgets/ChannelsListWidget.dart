@@ -19,7 +19,7 @@ class ChannelsListWidget extends StatelessWidget {
             ),
           ),
           Text(
-              "Loading Channels...",
+              'Loading Channels...',
               style: TextStyle(
                 fontSize: 20,
               )
@@ -39,7 +39,7 @@ class ChannelsListWidget extends StatelessWidget {
         if (snapshot.hasError) {
           print(snapshot.error);
           return Center(
-            child: Text("Error found !",
+            child: Text('Error found !',
               style: TextStyle(fontSize: 40),
             ),
           );
@@ -64,7 +64,7 @@ class ChannelsListWidget extends StatelessWidget {
   }
 
   Future<List<Channel>> _loadChannels(BuildContext context) async {
-    ConnectionInformation cp =  Provider.of<ConnectionInformation>(context,  listen: false);
+    var cp =  Provider.of<ConnectionInformation>(context,  listen: false);
     return await cp.loadChannels(null);
   }
 }

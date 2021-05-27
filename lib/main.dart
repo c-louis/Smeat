@@ -18,7 +18,7 @@ class MyTeamsClientRoot extends StatelessWidget {
         Provider<ConnectionInformation>(create: (_) => ConnectionInformation()),
       ],
       child: VRouter(
-        theme: ThemeData.dark(),
+        theme: ThemeData.light(),
         debugShowCheckedModeBanner: false,
         mode: VRouterModes.history,
         routes: <VRouteElementBuilder>[

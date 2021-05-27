@@ -10,11 +10,10 @@ class MyTeamsClient extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _controllerAddr.text = "92.222.91.125";
-    _controllerPort.text = "2340";
-    _controllerName.text = "";
+    _controllerAddr.text = '92.222.91.125';
+    _controllerPort.text = '2340';
+    _controllerName.text = '';
     return MaterialApp(
-      theme: ThemeData.dark(),
       home: Scaffold(
         extendBodyBehindAppBar: true,
         body: Padding(
@@ -23,7 +22,7 @@ class MyTeamsClient extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               Text(
-                "My Smaet",
+                'Smeat',
                 style: TextStyle(
                   fontSize: 40,
                 ),
@@ -40,16 +39,18 @@ class MyTeamsClient extends StatelessWidget {
                         controller: _controllerPort,
                         decoration: InputDecoration(labelText: 'Server Port'),
                         onTap: () {
-                          if (_controllerPort.text == "Can't be empty !")
+                          if (_controllerPort.text == "Can't be empty !") {
                             _controllerPort.clear();
+                          }
                         },
                       ),
                       TextFormField(
                         controller: _controllerName,
                         decoration: InputDecoration(labelText: 'Username'),
                         onTap: () {
-                          if (_controllerName.text == "Can't be empty !")
+                          if (_controllerName.text == "Can't be empty !") {
                             _controllerName.clear();
+                          }
                         },
                       ),
                     ]
@@ -61,7 +62,7 @@ class MyTeamsClient extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Connect to the Server "),
+                    Text('Connect to the Server '),
                     Icon(Icons.arrow_forward_ios_sharp),
                   ],
                 )
@@ -74,12 +75,12 @@ class MyTeamsClient extends StatelessWidget {
   }
 
   void _connectToServer(BuildContext context) async {
-    print("Called");
+    print('Called');
     String addr;
     if (_controllerAddr.text.isNotEmpty) {
       addr = _controllerAddr.text;
     } else {
-      addr = "127.0.0.1";
+      addr = '127.0.0.1';
     }
     if (_controllerName.text.isEmpty ||
         _controllerName.text == "Can't be empty !") {
@@ -89,23 +90,24 @@ class MyTeamsClient extends StatelessWidget {
         _controllerPort.text == "Can't be empty !") {
       _controllerPort.text = "Can't be empty !";
     }
-    if (_controllerName.text.isNotEmpty && _controllerName.text.contains(" ")) {
-      _controllerName.text = "Space not allowed !";
+    if (_controllerName.text.isNotEmpty && _controllerName.text.contains(' ')) {
+      _controllerName.text = 'Space not allowed !';
     }
     if (_controllerPort.text == "Can't be empty !" ||
         _controllerName.text == "Can't be empty !" ||
-        _controllerName.text == "Space not allowed !")
+        _controllerName.text == 'Space not allowed !') {
       return;
-    ConnectionInformation tmp =
+    }
+    var tmp =
     Provider.of<ConnectionInformation>(context, listen: false);
     tmp.username = _controllerName.text;
     tmp.address = addr;
     tmp.port = _controllerPort.text;
     if (await tmp.connect()) {
-      print("Successfully Connected to server and Logged in !");
+      print('Successfully Connected to server and Logged in !');
       ConnectedRoutes.toTeams(context, _controllerName.text);
     } else {
-      print("An Erorr occured !");
+      print('An Erorr occured !');
     }
   }
 }

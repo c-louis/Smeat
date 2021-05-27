@@ -18,7 +18,7 @@ class TeamsListWidget extends StatelessWidget {
             ),
           ),
           Text(
-              "Loading teams...",
+              'Loading teams...',
               style: TextStyle(
                 fontSize: 20,
               )
@@ -38,7 +38,7 @@ class TeamsListWidget extends StatelessWidget {
         if (snapshot.hasError) {
           print(snapshot.error);
           return Center(
-            child: Text("Error found !",
+            child: Text('Error found !',
               style: TextStyle(fontSize: 40),
             ),
           );
@@ -52,7 +52,7 @@ class TeamsListWidget extends StatelessWidget {
               subtitle: Text(t.desc),
               onTap: () {
                 Provider.of<ConnectionInformation>(context, listen: false).setTeam = t;
-                ConnectedRoutes.toChannels(context, context.vRouter.pathParameters['username'] ?? "", t.uuid);
+                ConnectedRoutes.toChannels(context, context.vRouter.pathParameters['username'] ?? '', t.uuid);
               },
             );
           },
@@ -63,7 +63,7 @@ class TeamsListWidget extends StatelessWidget {
   }
 
   Future<List<Team>> _loadTeams(BuildContext context) async {
-    ConnectionInformation cp =  Provider.of<ConnectionInformation>(context,  listen: false);
+    var cp =  Provider.of<ConnectionInformation>(context,  listen: false);
     return await cp.loadTeams();
   }
 }

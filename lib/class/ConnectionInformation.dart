@@ -16,7 +16,7 @@ class ConnectionInformation {
   late StreamSubscription<RawSocketEvent> _eventHandler;
 
   /// Message queue
-  Queue<String> _messages = Queue<String>();
+  final Queue<String> _messages = Queue<String>();
 
   /// The address the socket should connect to
   late String address;
@@ -37,10 +37,10 @@ class ConnectionInformation {
   Thread? thread;
 
   /// [_cachedTeams] is use to Cache Teams data and avoid spamming requests
-  List<Team> _cachedTeams = List<Team>.empty(growable: true);
+  final List<Team> _cachedTeams = List<Team>.empty(growable: true);
 
   /// [_cachedUsers] is use to Cache Users data and avoid spamming requests
-  List<User> _cachedUsers = List<User>.empty(growable: true);
+  final List<User> _cachedUsers = List<User>.empty(growable: true);
 
   /// Getters
   List<User> get cachedUsers => _cachedUsers;
@@ -63,9 +63,9 @@ class ConnectionInformation {
   /// Connect the socket to [address] and [port] and loggin with [username]
   Future<bool> connect() async {
     if (hasConnected) {
-      _eventHandler.cancel();
+      await _eventHandler.cancel();
       _messages.clear();
-      _socket.close();
+      await _socket.close();
       user = null;
       team = null;
       channel = null;
@@ -85,25 +85,25 @@ class ConnectionInformation {
 
     hasConnected = true;
 
-    this.sendMessage('TCP LOGIN ' + username);
-    String answer = await this.readMessage();
+    sendMessage('TCP LOGIN ' + username);
+    var answer = await readMessage();
 
-    if (answer.contains("ERR") == true || answer.contains("MATR") == true) {
+    if (answer.contains('ERR') == true || answer.contains('MATR') == true) {
       return Future.value(false);
     }
 
-    this.sendMessage("TCP USET");
-    this.sendMessage("TCP USEC");
-    this.sendMessage("TCP USETR");
+    sendMessage('TCP USET');
+    sendMessage('TCP USEC');
+    sendMessage('TCP USETR');
 
     _eventHandler = _socket.listen((RawSocketEvent t) async {
       if (t == RawSocketEvent.read) {
         await loadMessage();
       }
     }, onDone: () {
-      print("Connection closed !");
+      print('Connection closed !');
     }, onError: (Object error, StackTrace st) {
-      print("Socket Error $error, $st");
+      print('Socket Error $error, $st');
     });
 
     return Future.value(true);
@@ -115,106 +115,110 @@ class ConnectionInformation {
   }
 
   void processMessage() {
-    for (String s in _messages) {
-      if (s.contains("TCP EV")) {
-        List<String> sub = s.split('"');
+    for (var s in _messages) {
+      if (s.contains('TCP EV')) {
+        var sub = s.split('"');
         switch (sub[0].trim()) {
-          case "TCP EV1":
+          case 'TCP EV1':
             {
-              User u = User(sub[1], name: sub[3], status: true);
+              var u = User(sub[1], name: sub[3], status: true);
               if (!_cachedUsers.contains(u)) _cachedUsers.add(u);
             }
             break;
-          case "TCP EV2":
+          case 'TCP EV2':
             {
-              User u = _cachedUsers.firstWhere(
+              var u = _cachedUsers.firstWhere(
                   (element) => element.uuid == sub[1],
                   orElse: () => User(sub[1], name: sub[3]));
               u.status = false;
             }
             break;
-          case "TCP EV3":
+          case 'TCP EV3':
             {
-              User from = _cachedUsers.firstWhere(
+              var from = _cachedUsers.firstWhere(
                   (element) => element.uuid == sub[1],
                   orElse: () => User(sub[1]));
-              String message = sub[3];
-              print("Received a message from : ${from.uuid} > $message");
+              var message = sub[3];
+              print('Received a message from : ${from.uuid} > $message');
             }
             break;
-          case "TCP EV4":
+          case 'TCP EV4':
             {
-              Team t =
+              /*var t =
                   _cachedTeams.firstWhere((element) => element.uuid == sub[1]);
               // TODO New Reply In Thread !
+               */
             }
             break;
-          case "TCP EV5":
+          case 'TCP EV5':
             {
-              Team t = Team(sub[1], sub[3]);
+              var t = Team(sub[1], sub[3]);
               if (!_cachedTeams.contains(t)) _cachedTeams.add(t);
             }
             break;
-          case "TCP EV8":
+          case 'TCP EV8':
             {
-              User u = User(sub[1],
-                  name: sub[3], status: (sub[5] == "1" ? true : false));
+              var u = User(sub[1],
+                  name: sub[3], status: (sub[5] == '1' ? true : false));
               if (!_cachedUsers.contains(u)) {
                 _cachedUsers.add(u);
               }
             }
             break;
-          case "TCP EV9":
+          case 'TCP EV9':
             {
-              Team t = Team(sub[1], sub[3], desc: sub[5]);
+              var t = Team(sub[1], sub[3], desc: sub[5]);
               if (!_cachedTeams.contains(t)) {
                 _cachedTeams.add(t);
               }
             }
             break;
-          case "TCP EV10":
+          case 'TCP EV10':
             {
-              Channel c = Channel(sub[1], sub[3], sub[5]);
+              var c = Channel(sub[1], sub[3], sub[5]);
               if (!team!.channels.contains(c)) {
                 team!.channels.add(c);
               }
             }
             break;
-          case "TCP EV11":
+          case 'TCP EV11':
             {
-              User u = _cachedUsers.firstWhere(
+              var u = _cachedUsers.firstWhere(
                   (element) => element.uuid == sub[3],
                   orElse: () => User(sub[3]));
-              Thread thr = Thread(sub[1], u, sub[7], sub[9], sub[5]);
-              if (!channel!.threads.contains(thr))
+              var thr = Thread(sub[1], u, sub[7], sub[9], sub[5]);
+              if (!channel!.threads.contains(thr)) {
                 channel!.threads.add(thr);
+              }
             }
             break;
-          case "TCP EV12":
+          case 'TCP EV12':
             {
               print(s);
-              User u = _cachedUsers.firstWhere(
+              var u = _cachedUsers.firstWhere(
                   (element) => element.uuid == sub[3],
                   orElse: () => User(sub[3]));
-              Message m = Message(u, sub[5], sub[7]);
+              var m = Message(u, sub[5], sub[7]);
               if (!thread!.messages.contains(m)) thread!.messages.add(m);
             }
             break;
-          case "TCP EV13":
+          case 'TCP EV13':
             {
               // TODO List of private messages
             }
             break;
-          case "TCP EV20":
+          case 'TCP EV20':
             {
               user = User(sub[1], name: sub[3], status: true);
+              /// TODO ev20
             }
             break;
-          case "TCP EV24":
+          case 'TCP EV24':
             {
-              Team t = Team(sub[1], sub[3], desc: sub[5]);
-              if (!_cachedTeams.contains(t))
+              var t = Team(sub[1], sub[3], desc: sub[5]);
+              if (!_cachedTeams.contains(t)) {
                 _cachedTeams.add(t);
+              }
             }
             break;
 
@@ -226,16 +230,16 @@ class ConnectionInformation {
             break;
         }
       } else {
-        print("Error : $s");
+        print('Error : $s');
       }
     }
     _messages.removeFirst();
   }
 
   Future<void> loadMessage() async {
-    StringBuffer response = StringBuffer();
+    var response = StringBuffer();
     await Future.doWhile(() async {
-      bool endOfResponse = false;
+      var endOfResponse = false;
       // Number of bits available to read
       while (_socket.available() > 0) {
         response.writeln((String.fromCharCodes(_socket.read()!)).trim());
@@ -248,9 +252,11 @@ class ConnectionInformation {
       return true;
     }).timeout(Duration(seconds: 1), onTimeout: () {});
 
-    print("Got a response : ${response.toString()}");
-    List<String> lrs = response.toString().split("\n");
-    for (String s in lrs) if (s.isNotEmpty) _messages.add(s);
+    print('Got a response : ${response.toString()}');
+    var lrs = response.toString().split('\n');
+    for (var s in lrs) {
+      if (s.isNotEmpty) _messages.add(s);
+    }
   }
 
   /// read in [_socket] and return the string or an empty string
@@ -259,19 +265,19 @@ class ConnectionInformation {
       return _messages.removeFirst();
     }
     await loadMessage();
-    return _messages.isNotEmpty ? _messages.removeFirst() : "";
+    return _messages.isNotEmpty ? _messages.removeFirst() : '';
   }
 
   /// Convert [message] to codec and send in [_socket]
   void sendMessage(String message) {
-    print("Sending message $message");
-    List<int> toSend = Utf8Codec().encode('$message\n');
+    print('Sending message $message');
+    var toSend = Utf8Codec().encode('$message\n');
     _socket.write(toSend);
   }
 
   /// Load teams from the server or return [_cachedTeams]
   Future<List<Team>> loadTeams() async {
-    this.sendMessage("TCP LIST");
+    sendMessage('TCP LIST');
     await loadMessage();
     processMessage();
 
@@ -280,12 +286,12 @@ class ConnectionInformation {
 
   /// Load Channel from the server accordind to [t]
   Future<List<Channel>> loadChannels(Team? t) async {
-    if (t == null) t = team!;
-    this.sendMessage("TCP SUB " + t.uuid);
-    this.sendMessage("TCP USET " + t.uuid);
-    this.sendMessage("TCP USEC");
-    this.sendMessage("TCP USETR");
-    this.sendMessage("TCP LIST");
+    t ??= team!;
+    sendMessage('TCP SUB ' + t.uuid);
+    sendMessage('TCP USET ' + t.uuid);
+    sendMessage('TCP USEC');
+    sendMessage('TCP USETR');
+    sendMessage('TCP LIST');
 
     await loadMessage();
     processMessage();
@@ -295,12 +301,12 @@ class ConnectionInformation {
 
   /// Load Thread from the server according [c]
   Future<List<Thread>> loadThreads(Channel? c) async {
-    if (c == null) c = channel!;
-    this.sendMessage("TCP SUB " + team!.uuid);
-    this.sendMessage("TCP USET " + team!.uuid);
-    this.sendMessage("TCP USEC " + c.uuid);
-    this.sendMessage("TCP USETR");
-    this.sendMessage("TCP LIST");
+    c ??= channel!;
+    sendMessage('TCP SUB ' + team!.uuid);
+    sendMessage('TCP USET ' + team!.uuid);
+    sendMessage('TCP USEC ' + c.uuid);
+    sendMessage('TCP USETR');
+    sendMessage('TCP LIST');
 
     await loadMessage();
     processMessage();
@@ -309,12 +315,12 @@ class ConnectionInformation {
   }
 
   Future<List<Message>> loadMessages(Thread? c) async {
-    if (c == null) c = thread!;
-    this.sendMessage("TCP SUB " + team!.uuid);
-    this.sendMessage("TCP USET " + team!.uuid);
-    this.sendMessage("TCP USEC " + channel!.uuid);
-    this.sendMessage("TCP USETR " + c.uuid);
-    this.sendMessage("TCP LIST");
+    c ??= thread!;
+    sendMessage('TCP SUB ' + team!.uuid);
+    sendMessage('TCP USET ' + team!.uuid);
+    sendMessage('TCP USEC ' + channel!.uuid);
+    sendMessage('TCP USETR ' + c.uuid);
+    sendMessage('TCP LIST');
 
     await loadMessage();
     processMessage();
@@ -324,45 +330,45 @@ class ConnectionInformation {
 
   /// Compare answer to [response] return [bool]
   Future<void> assertResponse(String response) async {
-    String answer = await this.readMessage();
+    var answer = await readMessage();
     if (answer != response) {
-      throw ("Got $answer, Expected $response");
+      throw ('Got $answer, Expected $response');
     }
   }
   
   Future<void> addTeam(String name, String desc) async {
-    this.sendMessage("TCP USET");
-    this.sendMessage('TCP CREATE "$name" "$desc"');
+    sendMessage('TCP USET');
+    sendMessage('TCP CREATE "$name" "$desc"');
 
-    await this.loadMessage();
-    this.processMessage();
+    await loadMessage();
+    processMessage();
   }
 
   Future<void> addChannel(String name, String desc) async {
-    this.sendMessage("TCP USET ${team!.uuid}");
-    this.sendMessage('TCP CREATE "$name" "$desc"');
+    sendMessage('TCP USET ${team!.uuid}');
+    sendMessage('TCP CREATE "$name" "$desc"');
 
-    await this.loadMessage();
-    this.processMessage();
+    await loadMessage();
+    processMessage();
   }
 
   Future<void> addThread(String name, String desc) async {
-    this.sendMessage("TCP USET ${team!.uuid}");
-    this.sendMessage("TCP USEC ${channel!.uuid}");
-    this.sendMessage('TCP CREATE "$name" "$desc"');
+    sendMessage('TCP USET ${team!.uuid}');
+    sendMessage('TCP USEC ${channel!.uuid}');
+    sendMessage('TCP CREATE "$name" "$desc"');
 
-    await this.loadMessage();
-    this.processMessage();
+    await loadMessage();
+    processMessage();
   }
 
   Future<void> addMessage(String message) async {
-    this.sendMessage("TCP USET ${team!.uuid}");
-    this.sendMessage("TCP USEC ${channel!.uuid}");
-    this.sendMessage("TCP USETR ${thread!.uuid}");
-    this.sendMessage('TCP CREATE "$message"');
+    sendMessage('TCP USET ${team!.uuid}');
+    sendMessage('TCP USEC ${channel!.uuid}');
+    sendMessage('TCP USETR ${thread!.uuid}');
+    sendMessage('TCP CREATE "$message"');
 
-    await this.loadMessage();
-    this.processMessage();
+    await loadMessage();
+    processMessage();
   }
 }
 
@@ -372,13 +378,13 @@ class Team {
   late final String desc;
   final List<Channel> channels = List<Channel>.empty(growable: true);
 
-  Team(this.uuid, this.name, {this.desc = ""});
+  Team(this.uuid, this.name, {this.desc = ''});
 
   @override
-  bool operator ==(Object other) => other is Team && other.uuid == this.uuid;
+  bool operator ==(Object other) => other is Team && other.uuid == uuid;
 
   @override
-  int get hashCode => this.uuid.hashCode;
+  int get hashCode => uuid.hashCode;
 }
 
 class Channel {
@@ -388,15 +394,15 @@ class Channel {
   List<Thread> threads = List<Thread>.empty(growable: true);
 
   Channel(String uuid, String name, String description)
-      : this.uuid = uuid,
-        this.name = name,
-        this.description = description;
+      : uuid = uuid,
+        name = name,
+        description = description;
 
   @override
-  bool operator ==(Object other) => other is Channel && other.uuid == this.uuid;
+  bool operator ==(Object other) => other is Channel && other.uuid == uuid;
 
   @override
-  int get hashCode => this.uuid.hashCode;
+  int get hashCode => uuid.hashCode;
 }
 
 class Thread {
@@ -410,10 +416,10 @@ class Thread {
   Thread(this.uuid, this.user, this.title, this.content, this.time);
 
   @override
-  bool operator ==(Object other) => other is Thread && other.uuid == this.uuid;
+  bool operator ==(Object other) => other is Thread && other.uuid == uuid;
 
   @override
-  int get hashCode => this.uuid.hashCode;
+  int get hashCode => uuid.hashCode;
 }
 
 class User {
@@ -421,13 +427,13 @@ class User {
   late final String name;
   late final bool status;
 
-  User(this.uuid, {this.name = "", this.status = false});
+  User(this.uuid, {this.name = '', this.status = false});
 
   @override
-  bool operator ==(Object other) => other is User && other.uuid == this.uuid;
+  bool operator ==(Object other) => other is User && other.uuid == uuid;
 
   @override
-  int get hashCode => this.uuid.hashCode;
+  int get hashCode => uuid.hashCode;
 }
 
 class Message {
@@ -439,8 +445,8 @@ class Message {
 
   @override
   bool operator ==(Object other) =>
-      other is Message && other.user == this.user && other.time == this.time;
+      other is Message && other.user == user && other.time == time;
 
   @override
-  int get hashCode => this.user.hashCode;
+  int get hashCode => user.hashCode;
 }

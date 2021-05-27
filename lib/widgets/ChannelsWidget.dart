@@ -38,25 +38,27 @@ class ChannelsWidgetState extends State<ChannelsWidget>
                       controller: _controllerName,
                       decoration: InputDecoration(labelText: 'Name'),
                       onTap: () {
-                        if (_controllerName.text == "Can't be empty !")
+                        if (_controllerName.text == "Can't be empty !") {
                           _controllerName.clear();
+                        }
                       },
                     ),
                     TextFormField(
                       controller: _controllerDesc,
                       decoration: InputDecoration(labelText: 'Description'),
                       onTap: () {
-                        if (_controllerDesc.text == "Can't be empty !")
+                        if (_controllerDesc.text == "Can't be empty !") {
                           _controllerDesc.clear();
+                        }
                       },
                     ),
-                    Text(""),
+                    Text(''),
                     ElevatedButton(
                       onPressed: _addChannel,
                       child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text("Add a channel "),
+                            Text('Add a channel '),
                             Icon(Icons.add),
                           ]
                       ),
@@ -79,9 +81,9 @@ class ChannelsWidgetState extends State<ChannelsWidget>
       body: body,
       bottomNavigationBar: BottomNavigationBar(
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: "List channels"),
-          BottomNavigationBarItem(icon: Icon(Icons.add), label: "Add a channel"),
-          BottomNavigationBarItem(icon: Icon(Icons.supervised_user_circle), label: "Talk with people"),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'List channels'),
+          BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add a channel'),
+          BottomNavigationBarItem(icon: Icon(Icons.supervised_user_circle), label: 'Talk with people'),
         ],
         onTap: (clicked) => _updatePage(clicked),
         currentIndex: selected,
@@ -108,8 +110,9 @@ class ChannelsWidgetState extends State<ChannelsWidget>
       _controllerDesc.text = "Can't be empty !";
     }
     if (_controllerName.text == "Can't be empty !" ||
-        _controllerDesc.text == "Can't be empty !")
+        _controllerDesc.text == "Can't be empty !") {
       return;
-    Provider.of<ConnectionInformation>(context, listen: false).addChannel(_controllerName.text, _controllerDesc.text);
+    }
+    await Provider.of<ConnectionInformation>(context, listen: false).addChannel(_controllerName.text, _controllerDesc.text);
   }
 }

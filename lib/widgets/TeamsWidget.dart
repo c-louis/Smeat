@@ -39,25 +39,27 @@ class TeamsWidgetState extends State<TeamsWidget>
                       controller: _controllerName,
                       decoration: InputDecoration(labelText: 'Name'),
                       onTap: () {
-                        if (_controllerName.text == "Can't be empty !")
+                        if (_controllerName.text == "Can't be empty !") {
                           _controllerName.clear();
+                        }
                       },
                     ),
                     TextFormField(
                       controller: _controllerDesc,
                       decoration: InputDecoration(labelText: 'Description'),
                       onTap: () {
-                        if (_controllerDesc.text == "Can't be empty !")
+                        if (_controllerDesc.text == "Can't be empty !") {
                           _controllerDesc.clear();
+                        }
                       },
                     ),
-                    Text(""),
+                    Text(''),
                     ElevatedButton(
                       onPressed: _addTeam,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text("Add a team "),
+                          Text('Add a team '),
                           Icon(Icons.add),
                         ]
                       ),
@@ -80,9 +82,9 @@ class TeamsWidgetState extends State<TeamsWidget>
       body: body,
       bottomNavigationBar: BottomNavigationBar(
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: "List teams"),
-          BottomNavigationBarItem(icon: Icon(Icons.add), label: "Add a team"),
-          BottomNavigationBarItem(icon: Icon(Icons.supervised_user_circle), label: "Talk with people"),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'List teams'),
+          BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add a team'),
+          BottomNavigationBarItem(icon: Icon(Icons.supervised_user_circle), label: 'Talk with people'),
         ],
         onTap: (clicked) => _updatePage(clicked),
         currentIndex: selected,
@@ -109,8 +111,9 @@ class TeamsWidgetState extends State<TeamsWidget>
       _controllerDesc.text = "Can't be empty !";
     }
     if (_controllerName.text == "Can't be empty !" ||
-        _controllerDesc.text == "Can't be empty !")
+        _controllerDesc.text == "Can't be empty !") {
       return;
-    Provider.of<ConnectionInformation>(context, listen: false).addTeam(_controllerName.text, _controllerDesc.text);
+    }
+    await Provider.of<ConnectionInformation>(context, listen: false).addTeam(_controllerName.text, _controllerDesc.text);
   }
 }
