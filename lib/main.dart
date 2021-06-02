@@ -15,10 +15,11 @@ class MyTeamsClientRoot extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<ConnectionInformation>(create: (_) => ConnectionInformation()),
+        ChangeNotifierProvider<ConnectionInformation>(create: (_) => ConnectionInformation()),
       ],
       child: VRouter(
-        theme: ThemeData.light(),
+        theme: ThemeData.dark(),
+        themeMode: ThemeMode.dark,
         debugShowCheckedModeBanner: false,
         mode: VRouterModes.history,
         routes: <VRouteElementBuilder>[

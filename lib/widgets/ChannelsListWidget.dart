@@ -53,7 +53,6 @@ class ChannelsListWidget extends StatelessWidget {
               subtitle: Text(t.description),
               onTap: () {
                 Provider.of<ConnectionInformation>(context, listen: false).setChannel = t;
-                ConnectedRoutes.toThreads(context, context.vRouter.pathParameters['username']!, context.vRouter.pathParameters['team']!, t.uuid);
               },
             );
           },
@@ -65,6 +64,6 @@ class ChannelsListWidget extends StatelessWidget {
 
   Future<List<Channel>> _loadChannels(BuildContext context) async {
     var cp =  Provider.of<ConnectionInformation>(context,  listen: false);
-    return await cp.loadChannels(null);
+    return await cp.loadChannels();
   }
 }

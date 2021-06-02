@@ -21,75 +21,18 @@ class TeamsWidgetState extends State<TeamsWidget>
 
   @override
   Widget build(BuildContext context) {
-    if (oldselected != selected) {
-      switch (selected) {
-        case 0:
-          {
-            body = TeamsListWidget();
-          }
-          break;
-        case 1:
-          {
-            body = Padding(
-              padding: const EdgeInsets.all(20),
-              child: Form(
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _controllerName,
-                      decoration: InputDecoration(labelText: 'Name'),
-                      onTap: () {
-                        if (_controllerName.text == "Can't be empty !") {
-                          _controllerName.clear();
-                        }
-                      },
-                    ),
-                    TextFormField(
-                      controller: _controllerDesc,
-                      decoration: InputDecoration(labelText: 'Description'),
-                      onTap: () {
-                        if (_controllerDesc.text == "Can't be empty !") {
-                          _controllerDesc.clear();
-                        }
-                      },
-                    ),
-                    Text(''),
-                    ElevatedButton(
-                      onPressed: _addTeam,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Add a team '),
-                          Icon(Icons.add),
-                        ]
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-          break;
-        case 2:
-          {
+    var t = Provider.of<ConnectionInformation>(context).thread;
 
-          }
-          break;
-      }
+    if (t == null) {
+      return Text('Todo');
+    } else {
+      return Column(
+        children: [
+          Text(t.title),
+          Text(t.content),
+        ]
+      );
     }
-
-    return Scaffold(
-      body: body,
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'List teams'),
-          BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Add a team'),
-          BottomNavigationBarItem(icon: Icon(Icons.supervised_user_circle), label: 'Talk with people'),
-        ],
-        onTap: (clicked) => _updatePage(clicked),
-        currentIndex: selected,
-      ),
-    );
   }
 
   void _updatePage(int clicked) {

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:my_teams_apk/class/ConnectionInformation.dart';
-import 'package:provider/provider.dart';
 import 'package:my_teams_apk/class/ConnectedRoutes.dart';
+import 'package:my_teams_apk/class/ConnectionInformation.dart';
+import 'package:pedantic/pedantic.dart';
+import 'package:provider/provider.dart';
 
 class MyTeamsClient extends StatelessWidget {
   final TextEditingController _controllerAddr = TextEditingController();
@@ -13,50 +14,47 @@ class MyTeamsClient extends StatelessWidget {
     _controllerAddr.text = '92.222.91.125';
     _controllerPort.text = '2340';
     _controllerName.text = '';
-    return MaterialApp(
-      home: Scaffold(
-        extendBodyBehindAppBar: true,
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Text(
-                'Smeat',
-                style: TextStyle(
-                  fontSize: 40,
-                ),
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Text(
+              'Smeat',
+              style: TextStyle(
+                fontSize: 40,
               ),
-              Form(
-                child: Column(
-                    children: <TextFormField>[
-                      TextFormField(
-                        controller: _controllerAddr,
-                        decoration: InputDecoration(labelText: 'Server IP'),
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.number,
-                        controller: _controllerPort,
-                        decoration: InputDecoration(labelText: 'Server Port'),
-                        onTap: () {
-                          if (_controllerPort.text == "Can't be empty !") {
-                            _controllerPort.clear();
-                          }
-                        },
-                      ),
-                      TextFormField(
-                        controller: _controllerName,
-                        decoration: InputDecoration(labelText: 'Username'),
-                        onTap: () {
-                          if (_controllerName.text == "Can't be empty !") {
-                            _controllerName.clear();
-                          }
-                        },
-                      ),
-                    ]
+            ),
+            Form(
+              child: Column(children: <TextFormField>[
+                TextFormField(
+                  controller: _controllerAddr,
+                  decoration: InputDecoration(labelText: 'Server IP'),
                 ),
-              ),
-              ElevatedButton(
+                TextFormField(
+                  keyboardType: TextInputType.number,
+                  controller: _controllerPort,
+                  decoration: InputDecoration(labelText: 'Server Port'),
+                  onTap: () {
+                    if (_controllerPort.text == "Can't be empty !") {
+                      _controllerPort.clear();
+                    }
+                  },
+                ),
+                TextFormField(
+                  controller: _controllerName,
+                  decoration: InputDecoration(labelText: 'Username'),
+                  onTap: () {
+                    if (_controllerName.text == "Can't be empty !" || _controllerName.text == 'Space not allowed !') {
+                      _controllerName.clear();
+                    }
+                  },
+                ),
+              ]),
+            ),
+            ElevatedButton(
                 onPressed: () => _connectToServer(context),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -66,9 +64,8 @@ class MyTeamsClient extends StatelessWidget {
                     Icon(Icons.arrow_forward_ios_sharp),
                   ],
                 )
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -98,14 +95,14 @@ class MyTeamsClient extends StatelessWidget {
         _controllerName.text == 'Space not allowed !') {
       return;
     }
-    var tmp =
-    Provider.of<ConnectionInformation>(context, listen: false);
+    var tmp = Provider.of<ConnectionInformation>(context, listen: false);
     tmp.username = _controllerName.text;
     tmp.address = addr;
     tmp.port = _controllerPort.text;
     if (await tmp.connect()) {
       print('Successfully Connected to server and Logged in !');
-      ConnectedRoutes.toTeams(context, _controllerName.text);
+      unawaited(tmp.reInitAll());
+      ConnectedRoutes.toWelcome(context, _controllerName.text);
     } else {
       print('An Erorr occured !');
     }

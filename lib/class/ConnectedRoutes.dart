@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_teams_apk/widgets/WelcomeWidget.dart';
 import 'package:vrouter/vrouter.dart';
 import 'package:my_teams_apk/widgets/scaffolds/MyTeamsScaffold.dart';
 import 'package:my_teams_apk/widgets/TeamsWidget.dart';
@@ -7,25 +8,18 @@ import 'package:my_teams_apk/widgets/ThreadsWidget.dart';
 import 'package:my_teams_apk/widgets/ThreadWidget.dart';
 
 class ConnectedRoutes extends VRouteElementBuilder {
-  static final String teams = 'teams';
+  static final String welcome = 'welcome';
 
-  static void toTeams(BuildContext context, String username) => context.vRouter.push('/$username/$teams');
+  static void toWelcome(BuildContext context, String username) => context.vRouter.push('/$username/$welcome');
 
-  static final String channels = 'channels';
+  static final String thread = 'thread';
 
-  static void toChannels(BuildContext context, String username, String team) =>
-    context.vRouter.push('/$username/$teams/$team/$channels');
+  static void toThread(BuildContext context, String username) => context.vRouter.push('/$username/$thread');
 
-  static final String threads = 'threads';
+  static final String user = 'user';
 
-  static void toThreads(BuildContext context, String username, String team, String channel) =>
-    context.vRouter.push('/$username/$teams/$team/$channels/$channel/$threads');
-
-  static void toThread(BuildContext context, String username, String team, String channel, String thread) {
-    print( '/$username/$teams/$team/$channels/$channel/$threads/$thread');
-    context.vRouter.push(
-        '/$username/$teams/$team/$channels/$channel/$threads/$thread');
-  }
+  static void toUser(BuildContext context, String username) =>
+    context.vRouter.push('/$username/$user');
 
   @override
   List<VRouteElement> buildRoutes() {
@@ -34,26 +28,16 @@ class ConnectedRoutes extends VRouteElementBuilder {
         widgetBuilder: (child) => MyTeamsScaffold(child),
         nestedRoutes: [
           VWidget(
-            path: teams,
-            widget: TeamsWidget(),
-            stackedRoutes: [
-              VWidget(
-                path: ':team/' + channels,
-                widget: ChannelsWidget(),
-                stackedRoutes: [
-                  VWidget(
-                    path: ':channel/' + threads,
-                    widget: ThreadsWidget(),
-                    stackedRoutes: [
-                      VWidget(
-                        path: ':thread',
-                        widget: ThreadWidget(),
-                      ),
-                    ]
-                  ),
-                ]
-              ),
-            ]
+            path: welcome,
+            widget: WelcomeWidget(),
+          ),
+          VWidget(
+            path: thread,
+            widget: ThreadWidget(),
+          ),
+          VWidget(
+            path: user,
+            widget: ChannelsWidget(),
           ),
         ]
     )];

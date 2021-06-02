@@ -2,134 +2,112 @@ import 'package:flutter/material.dart';
 import 'package:my_teams_apk/class/ConnectionInformation.dart';
 import 'package:provider/provider.dart';
 
-class ThreadWidget extends StatefulWidget {
-  @override
-  ThreadWidgetState createState() => ThreadWidgetState();
-}
+class ThreadWidget extends StatelessWidget {
 
-class ThreadWidgetState extends State<ThreadWidget> {
-  final TextEditingController _controllerCom = TextEditingController();
-
-  final Widget loading = Container(
-    child: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          SizedBox(
-            height: 200,
-            width: 200,
-            child: CircularProgressIndicator(
-              strokeWidth: 8,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow),
-            ),
-          ),
-          Text(
-              'Loading comments...',
-              style: TextStyle(
-                fontSize: 20,
-              )
-          ),
-        ],
-      ),
-    ),
-  );
+  final TextEditingController _newMessageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    var t = Provider.of<ConnectionInformation>(context, listen: true).thread!;
-    return Padding(
-      padding: EdgeInsets.all(20),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                t.title,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30,
-                ),
-              ),
-              Text(t.time),
-            ],
-          ),
-          Text(''),
-          Text(
-            t.content,
-            style: TextStyle(
-              fontSize: 20,
-            ),
-          ),
-          Text(''),
-          Divider(),
-          Text('Comments : '),
-          FutureBuilder<List<Message>>(
-            initialData: Provider.of<ConnectionInformation>(context, listen: false).cachedMessages,
-            future: _loadMessages(context),
-            builder: (context, AsyncSnapshot<List<Message>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting && (snapshot.data as List<Message>).isEmpty) return loading;
-              if (snapshot.hasError) {
-                print(snapshot.error);
-                return Center(
-                  child: Text('Error found !',
-                    style: TextStyle(fontSize: 40),
-                  ),
-                );
-              }
-              return Expanded(
-                child: ListView.separated(
-                  itemCount: (snapshot.data as List<Message>).length,
-                  itemBuilder: (context, index) {
-                    Message? t = (snapshot.data as List<Message>)[index];
-                    return ListTile(
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(t.user.name),
-                          Text(t.time),
-                        ]
+
+    return Selector<ConnectionInformation, Thread>(
+      selector: (_, inf) => inf.thread!,
+      shouldRebuild: (prev, next) {
+        return true;
+      },
+      builder: (_, thread, __) {
+        var messages = thread.messages;
+        messages.sort((a, b) {
+          var at = DateTime.parse(a.time);
+          var bt = DateTime.parse(b.time);
+          return at.compareTo(bt);
+        });
+        return Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 60),
+              child: ListView(
+                reverse: true,
+                children: [
+                  Column(
+                    children: [
+                      Text(''),
+                      Text(
+                        'Thread name: ' + thread.title,
+                        style: TextStyle(
+                          fontSize: 16,
+                        )
                       ),
-                      subtitle: Text(t.message),
-                    );
-                  },
-                  separatorBuilder: (context,index) => const Divider(),
-                )
-              );
-            }
-          ),
-          TextFormField(
-            controller: _controllerCom,
-            decoration: InputDecoration(labelText: 'Comment'),
-          ),
-          ElevatedButton(
-            onPressed: () => _addComment(context),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Comment '),
-                Icon(Icons.comment),
-              ],
+                      Text(
+                          'Thread content: ' + thread.content,
+                          style: TextStyle(
+                            fontSize: 16,
+                          )
+                      ),
+                      for (var mes in messages) ThreadAnswer(mes),
+                    ]
+                  ),
+                ]
+              ),
             ),
-          ),
-        ],
-      ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        color: Colors.grey,
+                    ),
+                    child: Row(
+                        children: [
+                          Flexible(
+                            child: TextFormField(
+                              controller: _newMessageController,
+                              decoration: InputDecoration(
+                                icon: Icon(Icons.message_outlined),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                              icon: Icon(Icons.send),
+                              onPressed: () => _addComment(context),
+                          )
+                        ]
+                    )
+                  ),
+                ),
+              ]
+            ),
+          ]
+        );
+      }
     );
   }
 
-  Future<List<Message>> _loadMessages(BuildContext context) {
-    print('LOADING MESSAGES');
-    var cp =  Provider.of<ConnectionInformation>(context,  listen: false);
-    return cp.loadMessages(null);
-  }
-
   Future<void> _addComment(BuildContext context) async {
-    if (_controllerCom.text.isNotEmpty) {
-      await Provider.of<ConnectionInformation>(context, listen: false).addMessage(_controllerCom.text);
-      _controllerCom.clear();
-      setState(() {
-
-      });
+    if (_newMessageController.text.isNotEmpty) {
+      await Provider.of<ConnectionInformation>(context, listen: false).addMessage(_newMessageController.text);
+      _newMessageController.clear();
     }
   }
+}
+
+class ThreadAnswer extends StatelessWidget {
+  late final Message message;
+
+  ThreadAnswer(this.message);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(message.user.name),
+      subtitle: Text(message.message),
+      trailing: Text(message.time),
+    );
+  }
+
 }

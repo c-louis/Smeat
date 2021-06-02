@@ -52,7 +52,6 @@ class TeamsListWidget extends StatelessWidget {
               subtitle: Text(t.desc),
               onTap: () {
                 Provider.of<ConnectionInformation>(context, listen: false).setTeam = t;
-                ConnectedRoutes.toChannels(context, context.vRouter.pathParameters['username'] ?? '', t.uuid);
               },
             );
           },

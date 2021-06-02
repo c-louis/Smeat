@@ -55,9 +55,6 @@ class ThreadsListWidget extends StatelessWidget {
                 Provider.of<ConnectionInformation>(context, listen: false).setThread = t;
                 ConnectedRoutes.toThread(context,
                   context.vRouter.pathParameters['username']!,
-                  context.vRouter.pathParameters['team']!,
-                  context.vRouter.pathParameters['channel']!,
-                  t.uuid
                 );
               },
             );
@@ -70,6 +67,6 @@ class ThreadsListWidget extends StatelessWidget {
 
   Future<List<Thread>> _loadThreads(BuildContext context) async {
     var cp =  Provider.of<ConnectionInformation>(context,  listen: false);
-    return await cp.loadThreads(null);
+    return await cp.loadThreads();
   }
 }
